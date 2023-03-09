@@ -4,7 +4,7 @@
 A puppeteer based quote scraper!
 
 What the script does:
-1. Launches a headless browser
+1. Launches a browser
 2. Opens page
 3. Extracts quote, author, and about link for each quote on the current page
 4. For each quote, follows the about link to get the birth details for each author
