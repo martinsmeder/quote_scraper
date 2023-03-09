@@ -9,6 +9,7 @@
 // map() = Iterate over array and apply a function to each element and returns new array with results of applying the function to each element
 
 const puppeteer = require('puppeteer');
+const fs = require('fs');
 
 async function getQuotes() {
     // Launch browser
@@ -31,12 +32,11 @@ async function getQuotes() {
         // Get quote, author, and about link for each quote on the current page
         const quotes = await page.evaluate(() => {
             const quotes = document.querySelectorAll(".quote");
-            return Array.from(quotes).map(quoteAndAuthor => { // Convert NodeList to array and map each quote to an object with its data
-                const quote = quoteAndAuthor.querySelector(".text").innerText; 
-                const author = quoteAndAuthor.querySelector(".author").innerText; 
-                const aboutLink = quoteAndAuthor.querySelector("span > a"); 
-                return { quote, author, aboutLink }; // Return an object with the quote, author, and aboutLink data
-            });
+            return Array.from(quotes).map((quoteAndAuthor) => ({ // Convert NodeList to array and map each quote to an object with its data
+                quote: quoteAndAuthor.querySelector(".text").innerText,
+                author: quoteAndAuthor.querySelector(".author").innerText,
+                aboutLink: quoteAndAuthor.querySelector("span > a"),
+            }));
         });
 
         // Loop through each quote object in quotes array and get the birth details for each author
@@ -54,6 +54,7 @@ async function getQuotes() {
         }
 
         allQuotes = allQuotes.concat(quotes); // Add the quotes from the current page to the allQuotes array
+        
 
         // Check if there is a next page button and go to the next page if there is
         const nextPageButton = await page.$('.next > a');
@@ -65,7 +66,15 @@ async function getQuotes() {
         await nextPageButton.click();
     }
 
-    console.log(allQuotes);
+    // Sort by author name in alphabetical order
+    allQuotes.sort((a, b) => a.author.localeCompare(b.author));
+
+    // Write quotes to CSV file
+    const header = Object.keys(allQuotes[0]).join(',');
+    const csv = allQuotes.map(quote => Object.values(quote).join(',')).join('\n');
+    fs.writeFileSync('quotes.csv', `${header}\n${csv}`);
+
+    console.log('Quotes written to quotes.csv');
     // Close the browser
     await browser.close();
 }

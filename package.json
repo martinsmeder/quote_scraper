@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/martinsmeder/quote_scraper#readme",
   "dependencies": {
+    "fs": "^0.0.1-security",
     "puppeteer": "^19.7.3"
   }
 }
