@@ -19,15 +19,14 @@ async function getQuotes() {
 
     // Open a new page
     const page = await browser.newPage();
-    await page.waitForSelector('.quote'); // waitForSelector works better than domContentLoaded
-
+    
     let allQuotes = []; // An array to hold all quotes from all pages
     let currentPage = 1; // Start at the first page
 
     while (true) { // Loop through all pages
         console.log(`Extracting quotes from page ${currentPage}...`);
         await page.goto(`http://quotes.toscrape.com/page/${currentPage}/`);
-        await page.waitForSelector('.quote');
+        await page.waitForSelector('.quote'); // waitForSelector works better than domContentLoaded
 
         // Get quote, author, and about link for each quote on the current page
         const quotes = await page.evaluate(() => {
